@@ -5,7 +5,7 @@ Self-Driving Car Engineer Nanodegree Program
 ---
 
 ## Overview 
-In this project, a PID controller is designed to keep the car in the middle of the road. [The simulator](https://github.com/udacity/self-driving-car-sim/releases) reports back the car's distance from the center of road, angle, and speed. The control output is steering angle of the car. At the end, the optimum parameters are extracted using the manual method. To spice things up, a second controller is added to increase the speed of the car whenever it is safe. A video of final system can be found [here]().
+In this project, a PID controller is designed to keep the car in the middle of the road. [The simulator](https://github.com/udacity/self-driving-car-sim/releases) reports back the car's distance from the center of road, angle, and speed. The control output is steering angle of the car. At the end, the optimum parameters are extracted using the manual method. To spice things up, a second controller is added to increase the speed of the car whenever it is safe. A video of final system can be found [here](https://youtu.be/hFsznNKY0sg).
 
 ## Dependencies
 
