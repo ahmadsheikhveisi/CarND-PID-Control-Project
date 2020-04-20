@@ -1,7 +1,11 @@
+
 # CarND-Controls-PID
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+
+## Overview 
+In this project, a PID controller is designed to keep the car in the middle of the road. [The simulator](https://github.com/udacity/self-driving-car-sim/releases) reports back the car's distance from the center of road, angle, and speed. The control output is steering angle of the car. At the end, the optimum parameters are extracted using the manual method. To spice things up, a second controller is added to increase the speed of the car whenever it is safe. A video of final system can be found [here]().
 
 ## Dependencies
 
@@ -36,63 +40,21 @@ Fellow students have put together a guide to Windows set-up for the project [her
 4. Run it: `./pid`. 
 
 Tips for setting up your environment can be found [here](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/23d376c7-0195-4276-bdf0-e02f1f3c665d)
+## Effect of each PID coefficient
+### Proportional coefficient
+The P controller pushes the steer toward the setpoint with the control force proportional to the error (hence the name). The sole P controller can cause overshoot and oscillation which for this problem means driving to the other side of the road and sea sickness for the passengers. On the good side, increasing this coefficient can lower the response time and less sensitive system. Keeping the P coefficient low, on the other hand, doesn't make a good controller because of high response time.
+### Integral coefficient
+The I controller accumulates the error during time and helps to eliminate the steady state error and bias in the system. Increasing this coefficient can lower the response time and eliminate the bias better, while sacrificing the stability (overshoot and oscillation) and increasing the settling time like the P controller. Regarding the problem in hand, since the simulator doesn't have any bias, this coefficient just gathers the error and causes instability and changes the controller output even when the car is in the middle of the road.
+### Derivative coefficient
+The D controller acts according to the error changing rate; this helps to decrease the controller output when the system is getting close to the setpoint; thus decreasing the overshoot and settling time; on the negative side though, this adds a damping effect to the system. In our system, the D controller can predict if the car is going to deviate from the center of the road, even when the error is small. 
+## PID tuning approach
+### Steering controller
+Keeping the car in middle of the road can translate into a disturbance rejection problem. PID controller acts well in this scenarios because of the unknown nature of disturbance and complex dynamics of the car steering system.
+The [manual method](https://en.wikipedia.org/wiki/PID_controller#Manual_tuning) is chosen for PID tuning for this project. First, all coefficients are set to zero. Then the P coefficient is increased (0.05 steps) until the car can follow the pass with some oscillation. The final value for the P part is 0.15. Since the car doesn't have any bias, tuning the I parameter is skipped. The D coefficients has major role in this controller; as it is mentioned before, a controller with stronger the derivative nature can predict if the car is going to deviate from the center of road even when the error is small. This helps to act earlier when the car approaches road turns. Also, this part of the controller helps to keep the overshoot and oscillation low. I increased this parameter with the steps of 0.5 and the final values is 1.5.
+### Throttle controller
+This controller track the speed setpoint set depending on the cross track error (CTE). The speed setpoint can increases up to 40 mph when the error is small and decreases down to 25 mph when the error is large. This behavior matches the human drivers reaction too. when the car wonder off the center, the driver tend to slow down and control the vehicle. For this controller, the P coefficient is small (0.1), so the car doesn't accelerate too fast. During tuning of the P, a bias is noticed in the system. To achieve the desired speed and stay close to it without any bias, integral coefficient is added (0.001) but kept small to avoid the overshoot. Since the P and I parts are set to small values, the overshoot is small, so the D part didn't have that much effect in this controller; therefore, it is set to zero.
 
-## Editor Settings
+## Future improvements
+While Twiddle method introduced in the course may seem a more systematic approach, it works best when the system can run repeatedly without any setup. With the current system, I have to change the PID parameters, compile and run the program, fire up the simulator and observe the results. As a future improvement, it would be great to use a system which doesn't need that much setup. For instance, if the program could control the simulator, it would significantly help the process.
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
-
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
-
-## Code Style
-
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
-
-## Project Instructions and Rubric
-
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
-
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/e8235395-22dd-4b87-88e0-d108c5e5bbf4/concepts/6a4d8d42-6a04-4aa6-b284-1697c0fd6562)
-for instructions and the project rubric.
-
-## Hints!
-
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
-
-## Call for IDE Profiles Pull Requests
-
-Help your fellow students!
-
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
-
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
 
